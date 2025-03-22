@@ -1,6 +1,6 @@
 import mongoengine as db
 from datetime import datetime, timezone
-from typing import List
+from typing import List, Optional
 
 
 class Participant(db.EmbeddedDocument):
@@ -101,3 +101,132 @@ class Nomination(db.Document):
     
     def __str__(self) -> str:
         return f"{self.title} ({len(self.participants)} participants)"
+
+
+class User(db.Document):
+    """
+    Represents a Telegram user who has interacted with the bot.
+    Maps directly to the users collection created by the bot.
+    """
+    user_id = db.IntField(required=True, unique=True)
+    fullname = db.StringField(max_length=255)
+    username = db.StringField(max_length=64)
+    input_fullname = db.StringField(max_length=255)
+    input_phone = db.StringField(max_length=20)
+    created_at = db.DateTimeField(default=lambda: datetime.now(timezone.utc))
+    updated_at = db.DateTimeField(default=lambda: datetime.now(timezone.utc))
+    
+    meta = {
+        'indexes': [
+            {'fields': ['user_id'], 'unique': True},
+            {'fields': ['username']},
+            {'fields': ['input_phone']},
+            {'fields': ['-created_at']}
+        ],
+        'collection': 'users',  # Important: matches the bot's collection name
+        'ordering': ['-created_at']
+    }
+    
+    @classmethod
+    def get_or_create(cls, user_id: int, fullname: str = None, username: str = None) -> 'User':
+        user = cls.objects(user_id=user_id).first()
+        if user:
+            if (fullname and user.fullname != fullname) or (username and user.username != username):
+                user.fullname = fullname or user.fullname
+                user.username = username or user.username
+                user.updated_at = datetime.now(timezone.utc)
+                user.save()
+            return user
+        user = cls(user_id=user_id, fullname=fullname, username=username)
+        user.save()
+        return user
+    
+    def update_registration_info(self, input_fullname: str = None, input_phone: str = None) -> None:
+        if input_fullname:
+            self.input_fullname = input_fullname
+        if input_phone:
+            self.input_phone = input_phone
+        self.updated_at = datetime.now(timezone.utc)
+        self.save()
+    
+    def is_fully_registered(self) -> bool:
+        return bool(self.input_fullname and self.input_phone)
+    
+    def to_dict(self) -> dict:
+        return {
+            "user_id": self.user_id,
+            "fullname": self.fullname,
+            "username": self.username,
+            "input_fullname": self.input_fullname,
+            "input_phone": self.input_phone,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "is_registered": self.is_fully_registered(),
+        }
+    
+    def __str__(self) -> str:
+        return f"User {self.fullname or self.username or self.user_id}"
+
+
+class Vote(db.Document):
+    """
+    Represents a vote cast by a user for a participant in a nomination.
+    Note: Modified to match the structure used by the bot's database functions.
+    """
+    user_id = db.IntField(required=True)
+    nomination_id = db.ObjectIdField(required=True)
+    participant_name = db.StringField(required=True, max_length=100)
+    voted_at = db.DateTimeField(default=lambda: datetime.now(timezone.utc))
+    
+    meta = {
+        'indexes': [
+            {'fields': ['user_id', 'nomination_id'], 'unique': True},
+            {'fields': ['-voted_at']}
+        ],
+        'collection': 'votes',  # Important: matches the bot's collection name
+        'ordering': ['-voted_at']
+    }
+    
+    @property
+    def user(self):
+        """Get the user who cast this vote"""
+        return User.objects(user_id=self.user_id).first()
+        
+    @property
+    def nomination(self):
+        """Get the nomination for this vote"""
+        return Nomination.objects(id=self.nomination_id).first()
+    
+    @classmethod
+    def cast_vote(cls, user_id: int, nomination_id: str, participant_name: str) -> tuple:
+        user = User.objects(user_id=user_id).first()
+        if not user:
+            return False, "User not found"
+        nomination = Nomination.objects(id=nomination_id).first()
+        if not nomination:
+            return False, "Nomination not found"
+        if not nomination.is_active:
+            return False, "Voting is closed for this nomination"
+        participant_exists = any(p.name == participant_name for p in nomination.participants)
+        if not participant_exists:
+            return False, "Participant not found"
+        existing_vote = cls.objects(user_id=user_id, nomination_id=nomination_id).first()
+        if existing_vote and existing_vote.participant_name == participant_name:
+            return False, "You've already voted for this participant"
+        if existing_vote:
+            for i, p in enumerate(nomination.participants):
+                if p.name == existing_vote.participant_name:
+                    nomination.participants[i].votes = max(0, nomination.participants[i].votes - 1)
+                    break
+            existing_vote.delete()
+        vote = cls(user_id=user_id, nomination_id=nomination_id, participant_name=participant_name)
+        vote.save()
+        for i, p in enumerate(nomination.participants):
+            if p.name == participant_name:
+                nomination.participants[i].votes += 1
+                break
+        nomination.updated_at = datetime.now(timezone.utc)
+        nomination.save()
+        if existing_vote:
+            return True, f"Vote changed from {existing_vote.participant_name} to {participant_name}"
+        return True, "Vote recorded successfully"

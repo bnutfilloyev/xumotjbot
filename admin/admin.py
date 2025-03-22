@@ -14,8 +14,8 @@ from starlette_admin.contrib.mongoengine import Admin
 from auth import AdminAuth, AdminAuthProvider, LoginRequiredMiddleware
 from config import SECRET_KEY, DEBUG, ADMIN_TITLE, ADMIN_BASE_URL
 from db import get_startup_handlers, get_shutdown_handlers
-from views import NominationView
-from database import Nomination
+from views import NominationView, UserView, VoteView
+from database import Nomination, User, Vote
 
 # Configure logging
 logging.basicConfig(
@@ -72,6 +72,8 @@ def create_app() -> Starlette:
     
     # Register models
     _admin.add_view(NominationView(Nomination, label="Nominations", icon="fa fa-star"))
+    _admin.add_view(UserView(User, label="Users", icon="fa fa-users"))
+    _admin.add_view(VoteView(Vote, label="Votes", icon="fa fa-check-square"))
     
     # Mount admin interface to app
     _admin.mount_to(_app)
