@@ -18,8 +18,8 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "20m"
+        max-file: "5"
 
   admin:
     build:
@@ -30,9 +30,12 @@ services:
       - .env
     environment:
       - DEBUG=False
+      - HOST=0.0.0.0
       - MONGO_URI=mongodb://mongodb:27017/xumotjbot
     ports:
       - "8000:8000"
+    volumes:
+      - ./admin/static:/app/static
     networks:
       - bot-network
     depends_on:
@@ -40,26 +43,25 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "20m"
+        max-file: "5"
 
   mongodb:
     image: mongo:latest
     restart: unless-stopped
-    ports:
-      - "27027:27017"
-    env_file:
-      - .env
     volumes:
       - ./mongodb/data:/data/db
+      - ./mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    env_file:
+      - .env
     networks:
       - bot-network
     command: mongod --wiredTigerCacheSizeGB 1.0
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "20m"
+        max-file: "5"
 
 networks:
   bot-network:

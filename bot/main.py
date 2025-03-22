@@ -4,6 +4,7 @@ import logging
 import sys
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
 from aiogram.fsm.storage.base import BaseEventIsolation, BaseStorage
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.strategy import FSMStrategy
@@ -31,7 +32,7 @@ def get_dispatcher(
 
 async def start_bot():
     """This function will start bot with polling mode."""
-    bot = Bot(token=conf.bot.token, parse_mode="HTML")
+    bot = Bot(token=conf.bot.token, default=DefaultBotProperties(parse_mode='HTML'))
     await on_startup(bot)
     dp = get_dispatcher()
 

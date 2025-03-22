@@ -13,6 +13,5 @@ async def on_startup(bot: Bot) -> None:
     commands = [
         types.BotCommand(command="start", description="🚀 Botni ishga tushurish"),
         types.BotCommand(command="help", description="🆘 Yordam"),
-        types.BotCommand(command="settings", description="⚙️ Sozlamalar"),
     ]
     await bot.set_my_commands(commands=commands)
