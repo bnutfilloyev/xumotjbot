@@ -13,8 +13,8 @@ logger = logging.getLogger("xumotjbot.admin.db")
 def setup_database() -> None:
     """Connect to MongoDB database."""
     try:
-        connect(host=MONGO_URI)
-        logger.info(f"Connected to database: {DB_NAME}")
+        connect(host=MONGO_URI, db=DB_NAME)
+        logger.info(f"Connected to database: {DB_NAME}, {MONGO_URI}")
     except Exception as e:
         logger.error(f"Failed to connect to database: {e}")
         raise

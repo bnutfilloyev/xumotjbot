@@ -4,12 +4,17 @@ import datetime
 from bson.objectid import ObjectId
 from configuration import conf
 from motor import motor_asyncio
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class MongoDB:
     def __init__(self):
+        print(f"Connecting to MongoDB: {conf.db.uri}")
         self.client = motor_asyncio.AsyncIOMotorClient(conf.db.uri)
         self.db = self.client[conf.db.database]
+        logger.info(f"Connected to MongoDB: {conf.db.uri}")
 
     async def get_user(self, user_id):
         return await self.db.users.find_one({"user_id": user_id})

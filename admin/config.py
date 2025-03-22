@@ -17,7 +17,7 @@ PORT = int(os.getenv("PORT", 8000))
 DB_NAME = os.getenv("MONGODB_DATABASE", "xumotjbot")
 # Use MONGO_URI if provided, otherwise construct it from components
 if os.getenv("MONGO_URI"):
-    MONGO_URI = os.getenv("MONGO_URI")
+    MONGO_URI = f"{os.getenv('MONGO_URI')}"
 else:
     DB_HOST = os.getenv("MONGODB_HOST", "localhost")
     DB_PORT = os.getenv("MONGODB_PORT", "27017")
