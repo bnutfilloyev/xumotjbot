@@ -331,10 +331,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 <div align="center">
-  <p>Developed with ❤️ by <a href="https://github.com/yourusername">Your Name</a></p>
+  <p>Developed with ❤️ by <a href="https://github.com/bnutfilloyev">Your Name</a></p>
   <p>
-    <a href="https://github.com/yourusername">GitHub</a> •
-    <a href="https://t.me/yourusername">Telegram</a> •
-    <a href="mailto:your.email@example.com">Email</a>
+    <a href="https://github.com/bnutfilloyev">GitHub</a> •
+    <a href="https://t.me/bnutfilloyev">Telegram</a> •
+    <a href="mailto:bnutfilloyev@gmail.com">Email</a>
   </p>
 </div>
