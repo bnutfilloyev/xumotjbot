@@ -50,8 +50,6 @@ async def back_to_nominations(query: CallbackQuery):
 
 @router.callback_query(ParticipantCallback.filter())
 async def vote_for_participant(query: CallbackQuery, callback_data: ParticipantCallback):
-    # await query.answer()
-
     user_id = query.from_user.id
     nomination_id = callback_data.nomination_id
     participant_name = callback_data.name
@@ -64,14 +62,14 @@ async def vote_for_participant(query: CallbackQuery, callback_data: ParticipantC
     )
     
     if success:
-        await query.answer(text=f"🎯 Ajoyib tanlov! {participant_name} uchun ovozingiz muvaffaqiyatli qabul qilindi. \n\n{result_text}", show_alert=True)
+        await query.answer(text=result_text, show_alert=True)
         
         btn = await nominations_kb(nominations=await db.get_nominations())
         await query.message.edit_text("📜 Yana boshqa nominatsiyalarga ham ovoz bering va sevimli ishtirokchingizga yordam bering!", reply_markup=btn)
         return
 
     if not success:
-        await query.answer(f"❌ Afsuski, ovoz berish amalga oshmadi: {result_text}", show_alert=True)
+        await query.answer(result_text, show_alert=True)
         
         nomination = await db.get_nomination(nomination_id)
 
