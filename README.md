@@ -1,7 +1,7 @@
 # XumotjBot
 
 <div align="center">
-  <img src="https://via.placeholder.com/200x200/3F51B5/FFFFFF?text=XumotjBot" alt="XumotjBot Logo" width="200" height="200">
+  <img src="https://via.placeholder.com/200x200/3F51B5/FFFFFF?text=XumotjBot" alt="XumotjBot" width="200" height="200">
   <h3>A powerful Telegram bot for managing voting contests and nominations</h3>
   <p>
     <a href="#features">Features</a> •
@@ -82,7 +82,7 @@ xumotjbot/
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/xumotjbot.git
+git clone https://github.com/bnutfilloyev/xumotjbot.git
 cd xumotjbot
 ```
 
@@ -331,7 +331,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 <div align="center">
-  <p>Developed with ❤️ by <a href="https://github.com/bnutfilloyev">Your Name</a></p>
+  <p>Developed with ❤️ by <a href="https://github.com/bnutfilloyev">Bekhruz Nutfilloev</a></p>
   <p>
     <a href="https://github.com/bnutfilloyev">GitHub</a> •
     <a href="https://t.me/bnutfilloyev">Telegram</a> •
