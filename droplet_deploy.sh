@@ -23,10 +23,10 @@ if ! command -v docker-compose &> /dev/null; then
     echo "✅ Docker Compose installed"
 fi
 
-# Install Nginx and certbot for SSL
-echo "🔧 Installing Nginx and Certbot..."
+# Install Nginx
+echo "🔧 Installing Nginx..."
 sudo apt-get update
-sudo apt-get install -y nginx certbot python3-certbot-nginx
+sudo apt-get install -y nginx
 
 # Check if .env file exists
 if [ ! -f .env ]; then
@@ -51,9 +51,20 @@ echo "🔒 Setting permissions..."
 sudo chown -R $USER:$USER .
 sudo chmod +x *.sh
 
-# Configure Nginx
+# Configure Nginx - using server IP if no domain
 echo "🔧 Configuring Nginx..."
-read -p "Enter your domain name (e.g., example.com): " DOMAIN
+# Get server IP address
+SERVER_IP=$(curl -s https://ipinfo.io/ip)
+
+read -p "Do you have a domain name? (y/n): " HAS_DOMAIN
+if [ "$HAS_DOMAIN" = "y" ] || [ "$HAS_DOMAIN" = "Y" ]; then
+    read -p "Enter your domain name (e.g., example.com): " DOMAIN
+    USE_DOMAIN=true
+else
+    echo "No domain provided. Using server IP address: $SERVER_IP"
+    DOMAIN=$SERVER_IP
+    USE_DOMAIN=false
+fi
 
 # Create Nginx config file
 cat > /tmp/xumotjbot.conf << EOF
@@ -81,9 +92,13 @@ sudo mv /tmp/xumotjbot.conf /etc/nginx/sites-available/xumotjbot.conf
 sudo ln -sf /etc/nginx/sites-available/xumotjbot.conf /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
 
-# Set up SSL with Let's Encrypt
-echo "🔐 Setting up SSL with Let's Encrypt..."
-sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos --email your-email@example.com
+# Set up SSL with Let's Encrypt only if using a domain
+if [ "$USE_DOMAIN" = true ]; then
+    echo "🔐 Setting up SSL with Let's Encrypt..."
+    sudo apt-get install -y certbot python3-certbot-nginx
+    read -p "Enter your email for SSL certificate notifications: " SSL_EMAIL
+    sudo certbot --nginx -d $DOMAIN --non-interactive --agree-tos --email $SSL_EMAIL
+fi
 
 # Pull latest changes if in a Git repository
 if [ -d .git ]; then
@@ -130,7 +145,11 @@ if docker-compose -f docker-compose.prod.yml ps | grep -q 'Exit'; then
 fi
 
 echo "✅ Deployment completed successfully!"
-echo "📊 Admin panel: https://$DOMAIN/admin"
+if [ "$USE_DOMAIN" = true ] && [ "$HAS_DOMAIN" = "y" ]; then
+    echo "📊 Admin panel: https://$DOMAIN/admin"
+else
+    echo "📊 Admin panel: http://$SERVER_IP/admin"
+fi
 echo "🤖 Bot is running!"
 echo ""
 echo "💡 Useful commands:"
