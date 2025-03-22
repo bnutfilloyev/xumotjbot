@@ -1,4 +1,4 @@
-from aiogram import F, Router, types
+from aiogram import F, Router, types, Bot
 from aiogram.fsm.context import FSMContext
 from keyboards.common_kb import contact_kb
 from structures.states import RegState
@@ -10,7 +10,7 @@ register_router = Router()
 
 
 @register_router.message(RegState.fullname, ~F.text.startswith("/"))
-async def input_firstname(message: types.Message, state: FSMContext):
+async def input_firstname(message: types.Message, state: FSMContext, bot: Bot):
     await state.update_data(input_fullname=message.text)
     text = "📲 Iltimos, telefon raqamingizni kiriting. Biz siz bilan bog'lanishimiz uchun bu muhim!"
     await message.answer(text=text, reply_markup=contact_kb())
@@ -20,7 +20,7 @@ async def input_firstname(message: types.Message, state: FSMContext):
 @register_router.message(
     RegState.phone_number, ~F.text.startswith("/") | F.text | F.contact
 )
-async def input_phone(message: types.Message, state: FSMContext):
+async def input_phone(message: types.Message, state: FSMContext, bot: Bot):
     """📞 Telefon raqamingiz qabul qilindi. Endi quyidagi ko'rsatmalarga amal qiling."""
     if message.contact:
         phone = message.contact.phone_number
@@ -33,7 +33,7 @@ async def input_phone(message: types.Message, state: FSMContext):
     await db.user_update(user_id=message.from_user.id, data=data)
     await state.clear()
 
-    if not await check_subscription(message.bot, message.from_user.id):
+    if not await check_subscription(bot, message.from_user.id):
         await send_subscription_prompt(message)
         return
 
