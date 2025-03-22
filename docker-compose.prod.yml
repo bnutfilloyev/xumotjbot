@@ -8,9 +8,6 @@ services:
     restart: always
     env_file:
       - .env
-    environment:
-      - DEBUG=False
-      - MONGODB_HOST=mongodb
     networks:
       - bot-network
     depends_on:
@@ -28,10 +25,6 @@ services:
     restart: always
     env_file:
       - .env
-    environment:
-      - DEBUG=False
-      - HOST=0.0.0.0
-      - MONGO_URI=mongodb://mongodb:27017/xumotjbot
     ports:
       - "8000:8000"
     volumes:

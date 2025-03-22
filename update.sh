@@ -11,10 +11,6 @@ if ! docker info > /dev/null 2>&1; then
   exit 1
 fi
 
-# Create backup before updating
-echo "📦 Creating backup before update..."
-./backup.sh
-
 # Pull latest changes if in a Git repository
 if [ -d .git ]; then
   echo "📥 Pulling latest changes..."
