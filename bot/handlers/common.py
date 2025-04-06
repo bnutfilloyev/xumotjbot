@@ -3,7 +3,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from keyboards.common_kb import contact_kb, remove_kb
 from structures.database import db
-from structures.states import RegState
+from structures.states import RegState, BroadcastState
 from structures.subscription_checking import check_subscription, send_subscription_prompt
 from handlers.nomination import show_nominations_markup
 
