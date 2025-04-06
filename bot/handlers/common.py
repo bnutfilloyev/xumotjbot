@@ -47,3 +47,11 @@ async def check_subscription_handler(callback: types.CallbackQuery, state: FSMCo
         await show_nominations_markup(callback.message)
     else:
         await callback.answer("❌ Afsuski, siz hali ham kanalga obuna bo'lmagansiz. Iltimos, obuna bo'lib yana bir bor urinib ko'ring!", show_alert=True)
+
+
+
+@start_router.message(Command("broadcast"))
+async def broadcast_command(message: types.Message, state: FSMContext):
+    text = "Xabar matnini kiriting:"
+    await message.answer(text=text)
+    return await state.set_state(BroadcastState.broadcast)
