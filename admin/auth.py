@@ -87,7 +87,8 @@ class LoginRequiredMiddleware:
         
         if request.url.path.startswith("/admin"):
             if "user" not in request.session and not request.url.path.endswith("/login"):
-                response = RedirectResponse(url="/admin/login", status_code=302)
+                redirect_url = request.url.replace(path="/admin/login", query="").replace(scheme="https")
+                response = RedirectResponse(url=str(redirect_url), status_code=302)
                 await response(scope, receive, send)
                 return
                 
