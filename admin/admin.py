@@ -57,7 +57,7 @@ def create_app() -> Starlette:
         "title": ADMIN_TITLE,
         "base_url": ADMIN_BASE_URL,
         "auth_provider": AdminAuthProvider(),
-        "static_dir": STATIC_DIR,
+        "statics_dir": STATIC_DIR,
     }
     
     # Different versions of starlette_admin use different parameter names
@@ -67,7 +67,7 @@ def create_app() -> Starlette:
     else:
         # Older versions use static_files_dir
         admin_kwargs["static_files_dir"] = STATIC_DIR
-        admin_kwargs["statics_url"] = "/static"
+        admin_kwargs["statics_url"] = "/admin/statics"
     
     _admin = Admin(**admin_kwargs)
     
