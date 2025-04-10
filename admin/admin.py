@@ -46,7 +46,7 @@ def create_app() -> Starlette:
     )
     
     # Mount static files directly
-    _app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+    _app.mount("/admin/statics", StaticFiles(directory=STATIC_DIR), name="admin-static")
     
     # Get starlette_admin version to use proper parameter name
     import starlette_admin
@@ -57,6 +57,7 @@ def create_app() -> Starlette:
         "title": ADMIN_TITLE,
         "base_url": ADMIN_BASE_URL,
         "auth_provider": AdminAuthProvider(),
+        "static_dir": STATIC_DIR,
     }
     
     # Different versions of starlette_admin use different parameter names
