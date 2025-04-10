@@ -60,14 +60,14 @@ def create_app() -> Starlette:
         "statics_dir": STATIC_DIR,
     }
     
-    # Different versions of starlette_admin use different parameter names
-    if tuple(map(int, admin_version.split("."))) >= (0, 9, 0):
-        # Version 0.9.0+ uses statics_dir
-        admin_kwargs["statics_dir"] = STATIC_DIR
-    else:
-        # Older versions use static_files_dir
-        admin_kwargs["static_files_dir"] = STATIC_DIR
-        admin_kwargs["statics_url"] = "/statics"
+    # # Different versions of starlette_admin use different parameter names
+    # if tuple(map(int, admin_version.split("."))) >= (0, 9, 0):
+    #     # Version 0.9.0+ uses statics_dir
+    #     admin_kwargs["statics_dir"] = STATIC_DIR
+    # else:
+    #     # Older versions use static_files_dir
+    #     admin_kwargs["static_files_dir"] = STATIC_DIR
+    #     admin_kwargs["statics_url"] = "/statics"
     
     _admin = Admin(**admin_kwargs)
     
