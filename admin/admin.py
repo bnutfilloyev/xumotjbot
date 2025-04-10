@@ -33,7 +33,7 @@ os.makedirs(STATIC_DIR, exist_ok=True)
 def create_app() -> Starlette:
     """Create and configure the Starlette application."""
     middleware = [
-        Middleware(SessionMiddleware, secret_key=SECRET_KEY),
+        Middleware(SessionMiddleware, secret_key=SECRET_KEY, https_only=True),
         Middleware(AuthenticationMiddleware, backend=AdminAuth()),
         Middleware(LoginRequiredMiddleware),
     ]
