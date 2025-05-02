@@ -33,7 +33,7 @@ os.makedirs(STATIC_DIR, exist_ok=True)
 def create_app() -> Starlette:
     """Create and configure the Starlette application."""
     middleware = [
-        Middleware(SessionMiddleware, secret_key=SECRET_KEY, https_only=True),
+        Middleware(SessionMiddleware, secret_key=SECRET_KEY, https_only=False),
         Middleware(AuthenticationMiddleware, backend=AdminAuth()),
         Middleware(LoginRequiredMiddleware),
     ]
@@ -46,8 +46,8 @@ def create_app() -> Starlette:
     )
     
     # Mount static files directly
-    _app.mount("/admin/statics", StaticFiles(directory=STATIC_DIR), name="admin-static")    
-    
+    _app.mount("/static", StaticFiles(directory="static"), name="static")   
+
     # Configure admin interface with proper static file parameters based on version
     admin_kwargs = {
         "title": ADMIN_TITLE,
@@ -55,15 +55,6 @@ def create_app() -> Starlette:
         "auth_provider": AdminAuthProvider(),
         "statics_dir": STATIC_DIR,
     }
-    
-    # # Different versions of starlette_admin use different parameter names
-    # if tuple(map(int, admin_version.split("."))) >= (0, 9, 0):
-    #     # Version 0.9.0+ uses statics_dir
-    #     admin_kwargs["statics_dir"] = STATIC_DIR
-    # else:
-    #     # Older versions use static_files_dir
-    #     admin_kwargs["static_files_dir"] = STATIC_DIR
-    #     admin_kwargs["statics_url"] = "/statics"
     
     _admin = Admin(**admin_kwargs)
     
